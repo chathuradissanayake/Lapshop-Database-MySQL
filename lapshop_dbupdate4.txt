@@ -1,0 +1,631 @@
+Drop database LAPSHOP2;
+
+CREATE DATABASE LAPSHOP2;
+USE lapshop2;
+
+
+CREATE TABLE  laptop (
+    Laptop_ID int NOT NULL,  
+    Brand varchar(15) NOT NULL,
+    Model varchar(25) NOT NULL,
+    Price decimal(15,2) NOT NULL,
+    PRIMARY KEY (Laptop_ID)
+);
+
+CREATE TABLE  specifications (
+    Laptop_ID int NOT NULL,  
+    Ram varchar(6) NOT NULL,
+    Processor varchar(10) NOT NULL,
+    Rom int NOT NULL,
+    Gen int NOT NULL,
+    PRIMARY KEY (Laptop_ID)
+);
+
+ALTER TABLE specifications
+ADD CONSTRAINT FK_laptop_ID
+FOREIGN KEY(Laptop_ID) REFERENCES Laptop(Laptop_ID) ON DELETE cascade on update cascade;
+
+alter table specifications
+modify column processor varchar(25);
+
+Create table warranty (
+	Warranty_ID int not null,       -- primary key dropped weak entity
+	Laptop_ID int,
+    Start_date date,
+    End_date date,
+    Duration int not null,
+    Warranty_company varchar(20),
+    primary key (Warranty_ID)
+);
+
+ALTER TABLE warranty
+ADD CONSTRAINT FK_laptop_ID2
+FOREIGN KEY(Laptop_ID) REFERENCES Laptop(Laptop_ID) ON DELETE cascade on update cascade;
+
+-- ALTER TABLE warranty DROP PRIMARY KEY;
+
+Create table Customer (
+	Customer_ID int not null,
+    First_name varchar(20) not null,
+    Last_name varchar(20),
+    Address_Line1 varchar(20) not null,
+	Address_Line2 varchar(20),
+    City varchar(20),
+	Email varchar(30) not null, 
+    Phone_no varchar(14) not null,
+    primary key (Customer_ID)
+);
+
+Create table Payment (
+	Payment_ID int not null,
+    Payment_date date,
+    Amount decimal(8,2) not null,
+    Payment_method varchar(10) not null,
+	Customer_id int not null,
+    primary key (Payment_ID)
+);
+
+ALTER TABLE Payment
+ADD CONSTRAINT FK_customer_ID
+FOREIGN KEY(Customer_ID) REFERENCES Customer(Customer_ID) on delete no action;
+
+Create table Reviews (
+	Review_ID int not null,
+	comments varchar(256),
+    Rating int,
+    Review_date date,
+    Laptop_ID int not null,
+    Customer_ID int not null,
+    
+    primary key (Review_ID)
+);
+
+ALTER TABLE reviews
+ADD CONSTRAINT fk_laptopid2
+FOREIGN KEY (Laptop_id) REFERENCES laptop (Laptop_id) ON DELETE cascade on update cascade,
+
+ADD CONSTRAINT fk_customer2
+FOREIGN KEY (customer_id)REFERENCES customer(customer_id) ON delete cascade on update cascade;
+
+
+Create table Local_seller_details (
+	Seller_ID int not null,
+    First_Name varchar(30),
+    Last_Name varchar(30),
+    Company varchar(30) not null,
+    Email varchar(30) not null,
+    Contact_no varchar(20) not null,
+	primary key (Seller_ID)
+);
+
+
+Create table Foreign_seller_details (
+	Seller_ID int not null,
+    First_Name varchar(30),
+    Last_Name varchar(30),
+    Company varchar(30) not null,
+    Email varchar(30) not null,
+    Contact_no varchar(20) not null,
+	primary key (Seller_ID)
+);
+
+
+Create table Authorized_seller_details (
+	Seller_ID int not null,
+    First_Name varchar(30),
+    Last_Name varchar(30),
+    Company varchar(30) not null,
+    Email varchar(30) not null,
+    Contact_no varchar(20) not null,
+	primary key (Seller_ID)
+);
+
+
+
+Create table seller (
+	laptop_ID int not null,
+    seller_ID int not null,
+	primary key (laptop_ID)
+    
+	
+);
+
+-- alter table seller add constraint newname  unique(seller_ID);
+-- ALTER TABLE seller
+-- DROP FOREIGN KEY fk_seller;
+
+-- DROP table seller;
+    
+ALTER TABLE seller
+
+-- Add CONSTRAINT fk_sellerdetails
+-- FOREIGN KEY (Seller_ID) REFERENCES seller_details(seller_ID) on delete cascade on update cascade,
+
+ADD CONSTRAINT fk_seller_22
+FOREIGN KEY (Laptop_id) REFERENCES laptop (Laptop_id) ON DELETE cascade on update cascade;   
+
+
+
+
+CREATE TABLE Orders (
+	Order_ID varchar(10),
+	Total_Amount decimal(8,2) not null,
+    Quantity int,
+    Customer_ID int not null,
+    Laptop_ID int,
+    unique key(laptop_id),
+    primary key (Order_ID)
+);
+
+
+ALTER TABLE orders
+ADD CONSTRAINT FK_customerID_ord
+FOREIGN KEY(Customer_ID) REFERENCES Customer(Customer_ID) ON DELETE cascade on update cascade,
+
+ADD CONSTRAINT FK_order_idinvo
+FOREIGN KEY(Laptop_ID) REFERENCES Laptop(Laptop_ID) ON DELETE cascade on update cascade;
+
+
+CREATE TABLE Invoice (
+	Invoice_ID bigint not null,
+    Total_Amount decimal(8,2) not null,
+    Invoice_Date date,
+    Customer_ID int ,
+    Order_ID varchar(10),
+    primary key (invoice_ID)
+);
+
+-- drop table invoice;
+
+ALTER TABLE Invoice
+ADD CONSTRAINT FK_customerIDinvo2
+FOREIGN KEY(Customer_ID) REFERENCES Customer(Customer_ID) ON DELETE cascade on update cascade,
+
+ADD CONSTRAINT FK_order_idinvoice3
+FOREIGN KEY(Order_ID) REFERENCES Orders(Order_ID) ON DELETE cascade on update cascade;
+
+
+CREATE TABLE Shipping (
+	Shipping_ID int,
+    Order_ID varchar(10),
+    Shipping_Company varchar(20),
+    Shipping_date date,
+    primary key (shipping_ID)
+);
+ALTER TABLE shipping
+ADD CONSTRAINT FK_shipping
+FOREIGN KEY(Order_ID) REFERENCES Orders(order_ID) ON DELETE cascade on update cascade;
+
+CREATE TABLE Shipping_details (
+	Shipping_ID int,
+    tracking_no varchar(15) not null,
+    Shipping_type varchar(20) not null,
+    Country varchar(20) not null,
+    House_no varchar(20),
+    street_name varchar(30),
+    city varchar(20),
+    state varchar (20),
+    primary key(shipping_id)
+	
+);
+
+
+
+ALTER TABLE shipping_details
+ADD CONSTRAINT FK_shippingdet
+FOREIGN KEY(Shipping_ID) REFERENCES shipping(Shipping_ID) ON DELETE cascade on update cascade;
+
+INSERT INTO laptop (Laptop_ID, Brand, Model, Price) 
+VALUES 
+		(21001, 'Asus', 'ROG Zephyrus', 455000.00),
+		(21002, 'Dell', 'Inspiron 3532', 255000.00),
+		(21003, 'Dell', 'Inspiron 5532', 305000.00),
+		(21004, 'Huawei', 'Matebook X', 405000.00),
+		(21005, 'Aser', 'Nitro 15', 335000.00),
+		(21006, 'MSI', 'Stealth 15', 505000.00),
+        (21007, 'HP', 'Pavilion 14', 320000.00),
+        (21008, 'Lenovo', 'IdeaPad 5', 275000.00),
+        (21009, 'Acer', 'Swift 3', 420000.00),
+        (21010, 'Apple', 'MacBook Air', 1055000.00),
+        (21011, 'Microsoft', 'Surface Laptop 4', 850000.00),
+        (21012, 'Dell', 'XPS 15', 750000.00),
+        (21013, 'HP', 'Envy 13', 630000.00),
+        (21014, 'Lenovo', 'ThinkPad X1 Carbon', 960000.00),
+        (21015, 'Acer', 'Predator Helios 300', 580000.00);
+
+
+
+Insert into specifications
+value
+	(21003, '8GB', 'i7 11980HK', 512, 11),
+	(21004, '16GB', 'Ryzen 7 5800H', 1, 11),
+	(21005, '16GB', 'i7 1165G7', 1, 11),
+	(21006, '16GB', 'Ryzen 9 5900HX', 1, 11);
+
+
+
+INSERT INTO warranty (Warranty_ID, Laptop_ID, Start_date, End_date, Duration, Warranty_company)
+VALUES
+    (20234221, 21001,'2023-01-01', '2023-12-31', 12, 'Company A'),
+    (20234222, 21002, '2023-02-15', '2025-02-14', 24, 'Company B'),
+    (20234223, 21003, '2023-03-10', '2026-03-09', 36, 'Company C'),
+    (20234224, 21004, '2023-04-20', '2024-04-19', 12, 'Company D'),
+    (20234225, 21005, '2023-05-05', '2025-05-04', 24, 'Company E'),
+    (20234226, 21006, '2023-06-30', '2026-06-29', 36, 'Company F');   
+        
+
+
+INSERT INTO Customer (Customer_ID, First_name, Last_name, Address_Line1, Address_Line2, City, Email, Phone_no)
+VALUES (1001, 'John', 'Doe', '123 Main St', 'Apt 4B', 'New York', 'john.doe@gmail.com', 94714567890),
+		(1002, 'Jane', 'Smith', '456 Elm St', NULL, 'Los Angeles', 'jane.smith@gmail.com', 94787654310),
+		(1003, 'Robert', 'Johnson', '789 Oak St', 'Suite 12', 'Chicago', 'robert.johnson@gmail.com', 94777891234),
+		(1004, 'Emily', 'Brown', '101 Pine St', NULL, 'San Francisco', 'emily.brown@gmail.com', 94726789012),
+		(1005, 'Michael', 'Wilson', '222 Birch St', 'Apt 3C', 'Boston', 'michael.wilson@gmail.com', 94775678901),
+        (1006, 'Sarah', 'Davis', '555 Maple St', NULL, 'Seattle', 'sarah.davis@gmail.com', 94709012345);
+
+
+
+INSERT INTO Payment (Payment_ID, Payment_date, Amount, Payment_method, Customer_id)
+VALUES
+    (8001, '2023-09-04', 456600.00, 'Credit', 1001),
+-- (8002, '2023-09-05', 355575.00, 'Cash', 1002),
+    (8003, '2023-09-06', 255120.00, 'Debit', 1003),
+    (8004, '2023-09-07', 175550.00, 'Credit', 1004),
+    (8005, '2023-09-08', 195000.00, 'Cash', 1005),
+    (8006, '2023-09-09', 600000.00, 'Debit', 1006);
+
+
+-- delete from payment
+-- where payment_ID = 8002;
+
+INSERT INTO Reviews (Review_ID, Comments, Rating, Review_date, Laptop_ID, Customer_ID)
+VALUES 
+	(101, 'Great laptop', 5, '2023-09-01', 21001, 1001),
+    (103, 'Excellent build quality', 4, '2023-09-03', 21003, 1003),
+    (104, 'Fast and powerful', 5, '2023-09-04', 21004, 1004),
+    (105, 'Poor battery life', 2, '2023-09-05', 21005, 1005),
+    (106, 'Good value for the price', 4, '2023-09-06', 21006, 1006);
+
+
+Insert into local_seller_details (Seller_ID, First_Name,Last_Name,Company,Email,Contact_no)
+values
+    (21, 'John', 'Doe', 'ABC Inc.', 'john.doe@yahoo.com', '+94776545421'),
+    (22, 'Jane', 'Smith', 'XYZ Corporation', 'jane.smith@gmail.com', '+94786754344'),
+    (23, 'Mike', 'Johnson', 'LMN Ltd.', 'mike.johnson@hotmail.com', '+94765654666'),
+    (24, 'Sarah', 'Williams', 'PQR Industries', 'sarah.williams@zapmail.com', '+94775446544');
+    
+    
+INSERT INTO Foreign_seller_details (Seller_ID, First_Name, Last_Name, Company, Email, Contact_no)
+VALUES
+	(31, 'David', 'Miller', 'World Traders', 'david.miller@email.com', '+1-555-432-1098'),
+	(32, 'Olivia', 'Davis', 'Ocean Exports', 'olivia.davis@email.com', '+1-555-876-5432'),
+	(33, 'Alice', 'Smith', 'XYZ Exports', 'alice.smith@email.com', '+1-555-987-6543'),
+    (34, 'Emily', 'Brown', 'Trade Masters', 'emily.brown@email.com', '+1-555-567-8901'),
+	(35, 'Michael', 'Lee', 'International Co.', 'michael.lee@email.com', '+1-555-234-5678'),
+	(36, 'Sophia', 'Wilson', 'Global Exports', 'sophia.wilson@email.com', '+1-555-876-5432'),
+	(37, 'Robert', 'Johnson', 'Global Traders', 'robert.johnson@email.com', '+1-555-789-1234');
+    
+    
+insert into Authorized_seller_details(Seller_ID, First_Name, Last_Name, Company, Email, Contact_no)
+values 
+	(21, 'John', 'Doe', 'ABC Inc.', 'john.doe@yahoo.com', '+94776545421'),
+    (22, 'Jane', 'Smith', 'XYZ Corporation', 'jane.smith@gmail.com', '+94786754344'),
+	(33, 'Alice', 'Smith', 'XYZ Exports', 'alice.smith@email.com', '+1-555-987-6543'),
+    (34, 'Emily', 'Brown', 'Trade Masters', 'emily.brown@email.com', '+1-555-567-8901'),
+	(35, 'Michael', 'Lee', 'International Co.', 'michael.lee@email.com', '+1-555-234-5678');
+
+    
+INSERT INTO Seller (Laptop_ID,Seller_ID)
+VALUES 
+	(21001,21),
+    (21003,21),
+    (21004,23),
+    (21005,23),
+    (21006,31),
+    (21007,32),
+    (21008,32),
+    (21009,33),
+    (21010,34),
+    (21011,35),
+    (21012,36),
+    (21013,35),
+    (21014,33),
+    (21015,37);
+    
+
+
+INSERT INTO Orders (Order_ID, Total_Amount, Quantity, Customer_ID, Laptop_ID)
+VALUES
+    ('OD10442201', 233500.00, 2, 1001, 21001),
+    ('OD10442203', 177320.00, 3, 1003, 21003),
+    ('OD10442204', 122600.00, 2, 1004, 21004),
+    ('OD10442205', 65450.00, 1, 1005, 21005),
+    ('OD10442202', 322750.00, 1, 1006, 21006);
+
+   
+INSERT INTO Invoice (Invoice_ID, Total_Amount, Invoice_Date, Customer_ID, Order_ID)
+VALUES
+(4201,233500.00,'2023-09-01',1001,'OD10442201'),
+(4203, 177320.00, '2023-09-03', 1003, 'OD10442203'),
+(4204, 122600.00, '2023-09-04', 1004, 'OD10442204'),
+(4205, 65450.00, '2023-09-05', 1005, 'OD10442205');
+
+
+INSERT INTO Shipping (Shipping_ID, Order_ID, Shipping_Company, Shipping_Date)
+VALUES 
+	(3001, 'OD10442201', 'Company A', '2023-09-05'),
+    (3003, 'OD10442203', 'Company C', '2023-09-07'),
+    (3004, 'OD10442204', 'Company A', '2023-09-08'),
+    (3005, 'OD10442205', 'Company B', '2023-09-09');
+    
+INSERT INTO Shipping_details (Shipping_ID, tracking_no, Shipping_type, Country, House_no, street_name, city, state)
+VALUES 
+	(3001, 'TRK12345', 'Express', 'USA', '123', 'Main Street', 'New York', 'NY'),
+    (3003, 'TRK67890', 'Standard', 'Canada', '456', 'Maple Avenue', 'Toronto', 'ON'),
+    (3004, 'TRK54321', 'Express', 'UK', '789', 'High Street', 'London', 'England'),
+    (3005, 'TRK98765', 'Standard', 'Australia', '101', 'Bond Street', 'Sydney', 'NSW');
+    
+    
+-- ------------------------------------------Update------------------------------------------------------------------------------------
+
+UPDATE Orders
+SET Quantity = 4
+WHERE Order_ID = 'OD10442205';
+
+UPDATE Laptop
+SET Price = 465000.00
+WHERE Laptop_ID = 21002;
+
+UPDATE specifications
+SET Ram = '16GB'
+WHERE Laptop_ID = 21001;
+
+UPDATE Customer
+SET Email = 'pawanchathuramalee@gmail.com'
+WHERE Customer_ID = 1002;
+
+UPDATE Customer
+SET First_name = 'Kamal'
+WHERE Customer_ID = 1003;
+
+UPDATE Payment
+SET Amount = 500000.00
+WHERE Payment_ID = 8002;
+
+
+UPDATE Payment
+SET Payment_method = 'Cash'
+WHERE Payment_ID = 8001;
+
+
+UPDATE Reviews
+SET Rating = 3
+WHERE Review_ID = 101;
+
+UPDATE Reviews
+SET Comments = 'Really dissapointed'
+WHERE Review_ID = 106;
+
+
+UPDATE Seller
+SET Seller_ID = 26
+WHERE Laptop_ID = 21004;
+
+
+UPDATE Seller
+SET Seller_ID = 27
+WHERE Laptop_ID = 21005;
+
+
+UPDATE Local_Seller_details
+SET Email = 'henry123@gmail.com'
+WHERE Seller_ID = 22;
+
+
+UPDATE Foreign_Seller_details
+SET Contact_no = '+1-666-876-5432'
+WHERE Seller_ID = 32;
+
+
+UPDATE Invoice
+SET Total_Amount = 120500.00
+WHERE Invoice_ID = 9001;
+
+UPDATE Invoice
+SET Invoice_Date = '2023-09-06'
+WHERE Invoice_ID = 9003;
+
+UPDATE Shipping
+SET Shipping_Company = 'Fast X'
+WHERE Shipping_ID = 3001;
+
+UPDATE Shipping
+SET Shipping_date = '2023-09-25'
+WHERE Shipping_ID = 3003;
+
+UPDATE Shipping_details
+SET tracking_no = 'TRK54356'
+WHERE Shipping_ID = 3001;
+
+UPDATE Shipping_details
+SET Shipping_type = 'Express'
+WHERE Shipping_ID = 3004;
+
+-- --------------------------------------------------Delete-----------------------------------------------------------------------------
+
+DELETE FROM Laptop
+WHERE Laptop_ID = 21001;
+
+
+DELETE FROM Customer
+WHERE Customer_ID = 1002;
+
+
+DELETE FROM Payment
+WHERE Payment_ID = 8001;
+
+
+DELETE FROM Reviews
+WHERE Review_ID = 104;
+
+
+DELETE FROM Seller
+WHERE Laptop_ID = 21006;
+
+
+DELETE FROM Foreign_Seller_details
+WHERE Seller_ID = 33;
+
+
+DELETE FROM Orders
+WHERE Order_ID = 'OD10442202';
+
+
+DELETE FROM Invoice
+WHERE Invoice_ID = 9002;
+
+
+DELETE FROM Shipping
+WHERE Shipping_ID = 3002;
+
+
+DELETE FROM Shipping_details
+WHERE Shipping_ID = 3002;
+
+-- ---------------------------------------------------------------------------------------------------------------------------------------
+
+select * from laptop;
+select Payment_ID,amount,Payment_method from Payment;
+select * from Customer CROSS JOIN Orders;
+create view Delllaptops as select Laptop_ID,Model,price from Laptop where Brand = 'Dell';
+select*from Delllaptops;
+select Review_ID , Comments as Review, Rating from Reviews;
+select Brand,AVG(Price) as Average_Price from Laptop group by Brand;
+select First_Name,Last_Name,Email from Customer where Email like '%gmail.com';
+
+-- ----------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE seller_details AS                                     -- Union
+SELECT * FROM Local_seller_details
+UNION
+SELECT * FROM Foreign_seller_details; 
+
+CREATE TABLE Authorized_local_seller_details AS                    -- Intersection
+SELECT
+    ls.Seller_ID,
+    ls.First_Name,
+    ls.Last_Name,
+    ls.Company,
+    ls.Email,
+    ls.Contact_no
+FROM
+    Local_seller_details ls
+INNER JOIN
+    Authorized_seller_details asd
+ON
+    ls.Seller_ID = asd.Seller_ID;
+
+CREATE TABLE Authorized_Foreign_seller_details AS
+SELECT
+    ls.Seller_ID,
+    ls.First_Name,
+    ls.Last_Name,
+    ls.Company,
+    ls.Email,
+    ls.Contact_no
+FROM
+    Foreign_seller_details ls
+INNER JOIN
+    Authorized_seller_details asd
+ON
+    ls.Seller_ID = asd.Seller_ID;
+    
+
+Create table unauthorized_sellers_details                                          -- set difference
+SELECT sd.*
+FROM seller_details as sd
+LEFT JOIN authorized_seller_details as asd ON sd.seller_id = asd.seller_id
+WHERE asd.seller_id IS NULL;
+
+
+
+CREATE TABLE Unauthorized_sellers_laptops                                           -- division
+SELECT DISTINCT seller.Laptop_id
+FROM seller
+LEFT JOIN authorized_seller_details as asd ON seller.seller_id = asd.seller_id
+WHERE asd.seller_id IS NULL;
+
+CREATE TABLE shipping_discription                                                    -- inner Join
+select shipping.Shipping_ID, shipping.Shipping_Company, Shipping_details.tracking_no, Shipping_details.Shipping_type           
+From shipping
+Inner Join shipping_details ON shipping.shipping_id = shipping_details.shipping_id;
+
+CREATE TABLE Delivary_details                                                         -- natural join
+select Shipping_details.Tracking_no, shipping.shipping_date, Shipping_details.country, Shipping_details.House_no, Shipping_details.street_name, Shipping_details.city,Shipping_details.state
+From shipping natural join shipping_details;
+
+CREATE TABLE Authorized_sellers_laptop                                                -- left join
+Select seller.laptop_id, asd.Seller_ID, asd.Company
+From Authorized_seller_details as asd
+Left Join seller ON seller.seller_id = asd.seller_id;
+
+CREATE TABLE Unauthorized_sellers_laptops_with_details                                  -- right join
+Select seller.laptop_id, usd.Seller_ID, usd.Company
+From unauthorized_sellers_details as usd
+Right Join seller ON seller.seller_id = usd.seller_id;
+
+Create table Laptops_with_sellers                                                    -- full join
+(Select seller.laptop_id, asd.Seller_ID, asd.Company
+From Authorized_seller_details as asd
+Left Join seller ON seller.seller_id = asd.seller_id)
+union
+(Select seller.laptop_id, usd.Seller_ID, usd.Company
+From unauthorized_sellers_details as usd
+Right Join seller ON seller.seller_id = usd.seller_id);
+
+-- ---------------------------------------------------nested--------------------------------------------------------------------------
+CREATE TABLE Warranty_expire_in_2024
+SELECT c.Customer_ID, c.First_name, c.Last_name
+FROM Customer as c
+WHERE c.Customer_ID IN (
+    SELECT o.Customer_ID
+    FROM Orders as o
+    WHERE o.Laptop_ID IN (
+        SELECT w.Laptop_ID
+        FROM Warranty as w
+        WHERE YEAR(w.End_date) = 2024
+    )
+);
+
+CREATE TABLE Customers_who_have_gmail
+SELECT l.Laptop_ID, l.Brand, l.Model
+FROM Laptop l
+WHERE l.Laptop_ID IN (
+    SELECT o.Laptop_ID
+    FROM Orders o
+    WHERE o.Customer_ID IN (
+        SELECT c.Customer_ID
+        FROM Customer c
+        WHERE c.Email LIKE '%gmail.com'
+    )
+);
+
+CREATE TABLE Customers_who_have_highest_payment
+SELECT c.Customer_ID, c.First_name, c.Last_name
+FROM Customer c
+WHERE (
+    SELECT SUM(p.Amount)
+    FROM Payment p
+    WHERE p.Customer_ID = c.Customer_ID
+) = (
+    SELECT MAX(total_payment)
+    FROM (
+        SELECT SUM(p.Amount) AS total_payment
+        FROM Payment p
+        GROUP BY p.Customer_ID
+    ) AS customer_payments
+);
+
+
+-- -------------------------------------------------Tunning-------------------------------------------------------------------
+
